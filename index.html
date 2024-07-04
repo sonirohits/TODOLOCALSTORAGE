@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO DO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item li {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .delete-btn {
+            background-color: #ff6347;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #ff4c32;
+        }
+
+        .btn {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TO DO LIST</h1>
+        <form action="">
+            <div>
+                <input type="text" value="" class="todoValue" placeholder="Enter your task...">
+                <button type="submit" class="btn">Add Todo</button>
+            </div>
+            <ul class="todoLists">
+                <!-- List will be populated dynamically by JavaScript -->
+            </ul>
+        </form>
+    </div>
+
+    <script>
+        let temp = [];
+
+        const todoLists = document.querySelector(".todoLists");
+        const listvalue = document.querySelector('.todoValue');
+
+        const addTODOListLocalStorage = function(list) {
+            localStorage.setItem('internship', JSON.stringify(list));
+        }
+
+        const getToDOListLocalStorage = function() {
+            return JSON.parse(localStorage.getItem("internship")) || [];
+        }
+
+        const addTodoList = function() {
+            let todolistvalue = getToDOListLocalStorage();
+            let newTodo = listvalue.value.trim();
+            listvalue.value = "";
+            if (!todolistvalue.includes(newTodo) && newTodo.length !== 0) {
+                temp.push(newTodo);
+                addTODOListLocalStorage(temp);
+                renderTodoItem(newTodo);
+            }
+        }
+
+        const renderTodoItem = function(todoText) {
+            const todoDiv = document.createElement('li');
+            todoDiv.classList.add('todo-item'); 
+
+            const lielement = document.createElement('span');
+            lielement.textContent = todoText;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('delete-btn');
+
+            todoDiv.appendChild(lielement);
+            todoDiv.appendChild(deleteBtn);
+
+            todoLists.appendChild(todoDiv);
+        }
+
+        function showtodolist() {
+            let data = getToDOListLocalStorage();
+            temp = [...data];
+            if (data.length !== 0) {
+                data.forEach(function(current_todo) {
+                    renderTodoItem(current_todo);
+                });
+            }
+        }
+
+        // Event listener for adding TODO item
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addTodoList();
+        });
+
+        // Event delegation for delete button
+        todoLists.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn')) {
+                const todoItem = e.target.parentElement;
+                console.log(todoItem);
+                const todoText = todoItem.querySelector('span').textContent;
+                const index = temp.indexOf(todoText);
+                if (index !== -1) {
+                    temp.splice(index, 1);
+                    addTODOListLocalStorage(temp);
+                }
+                 todoItem.remove();
+            }
+        });
+
+        showtodolist();
+    </script>
+</body>
+</html>
